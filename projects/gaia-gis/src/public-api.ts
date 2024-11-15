@@ -4,3 +4,4 @@
 
 export * from './lib/gaia-gis.service';
 export * from './lib/gaia-gis.component';
+export * from './lib/interfaces/MapDesigns';
