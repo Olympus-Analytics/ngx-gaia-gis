@@ -58,12 +58,6 @@ git push origin feature/your-feature-name
 ## Code Style
 Please follow the existing code style and conventions. Ensure your code is well-documented and properly formatted.
 
-### Linting
-Run the linter to ensure your code follows the project's style guidelines:
-```sh
-npm run lint
-```
-
 ## Reporting Issues
 If you find a bug or have a feature request, please create an issue on GitHub. Provide as much detail as possible to help us understand and address the issue.
 
