@@ -10,6 +10,8 @@ import { FitOptions } from 'ol/View';
 import 'ol/ol.css';
 import VectorSource from 'ol/source/Vector';
 import { MapsDesign } from './interfaces/MapDesigns';
+import OSM from 'ol/source/OSM';
+import Overlay from 'ol/Overlay';
 @Injectable({
   providedIn: 'root',
 })
@@ -17,7 +19,6 @@ export class GaiaGisService {
   private map!: Map;
   private labels = new TileLayer({
     source: new XYZ({
-      url: 'https://{1-4}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png',
       attributions:
         'Gaia-GIS by © <a href="https://carto.com/attribution">Olympus Analytics</a>',
     }),
@@ -25,7 +26,11 @@ export class GaiaGisService {
   private rasterLayers: TileLayer[] = [];
   private pointLayer!: VectorLayer;
 
-  constructor() {}
+  constructor() {
+    this.pointLayer = new VectorLayer({
+      source: new VectorSource(),
+    });
+  }
 
   /**
    * Initializes the map with a given target, center, zoom level, and design.
@@ -36,50 +41,42 @@ export class GaiaGisService {
    */
   initializeMap(
     target: string,
-    {
-      center = [0, 0],
-      zoom = 2,
-      design = MapsDesign.CARTOCDN,
-    }: {
+    options: {
       center?: [number, number];
       zoom?: number;
       design?: MapsDesign;
-    } = {
-      center: [0, 0],
-      zoom: 2,
-      design: MapsDesign.CARTOCDN,
-    }
+    } = {}
   ): void {
+    const { center = [0, 0], zoom = 2, design = MapsDesign.CARTOCDN } = options;
+
     console.log('Inicializando el mapa...');
+
+    let baseLayer: TileLayer;
+
+    if (
+      design.includes('{z}') &&
+      design.includes('{x}') &&
+      design.includes('{y}')
+    ) {
+      baseLayer = new TileLayer({
+        source: new XYZ({
+          url: design,
+        }),
+      });
+    } else {
+      baseLayer = new TileLayer({
+        source: new OSM(),
+      });
+    }
+
     this.map = new Map({
       target: target,
-      layers: [
-        new TileLayer({
-          source: new XYZ({
-            url: design,
-          }),
-        }),
-        this.labels,
-      ],
+      layers: [baseLayer, this.labels, this.pointLayer],
       view: new View({
         center: fromLonLat(center),
         zoom: zoom,
       }),
     });
-
-    // Initialize the point layer
-    this.pointLayer = new VectorLayer({
-      source: new VectorSource(),
-      style: new Style({
-        image: new CircleStyle({
-          radius: 5,
-          fill: new Fill({ color: 'red' }),
-          stroke: new Stroke({ color: 'black', width: 1 }),
-        }),
-      }),
-    });
-
-    this.map.addLayer(this.pointLayer);
   }
 
   /**
@@ -160,29 +157,44 @@ export class GaiaGisService {
   /**
    * Adds a list of points to the map.
    * @param {[number, number][]} points - The list of points to add to the map.
-   * @param {string} [iconUrl='https://openlayers.org/en/latest/examples/data/icon.png'] - The URL of the icon to use for the points.
+   * @param {string} [iconUrl=''] - The URL of the icon to use for the points.
    */
-  addPoints(
-    points: [number, number][],
-    iconUrl: string = 'https://openlayers.org/en/latest/examples/data/icon.png'
-  ): void {
+  addPoints(points: [number, number][], iconUrl: string = ''): void {
     console.log('Añadiendo puntos al mapa...');
     const features = points.map((point) => {
       const feature = new Feature({
         geometry: new Point(fromLonLat(point)),
       });
-      feature.setStyle(
-        new Style({
-          image: new Icon({
-            src: iconUrl,
-            scale: 2, // Adjust the scale as needed
-          }),
-        })
-      );
+
+      if (iconUrl) {
+        feature.setStyle(
+          new Style({
+            image: new Icon({
+              src: iconUrl,
+              scale: 0.1,
+            }),
+          })
+        );
+      } else {
+        feature.setStyle(
+          new Style({
+            image: new CircleStyle({
+              radius: 5,
+              fill: new Fill({ color: 'red' }),
+              stroke: new Stroke({ color: 'black', width: 1 }),
+            }),
+          })
+        );
+      }
+
       return feature;
     });
 
-    this.pointLayer.getSource()?.clear();
-    this.pointLayer.getSource()?.addFeatures(features);
+    const source = this.pointLayer.getSource();
+    if (source) {
+      source.addFeatures(features);
+    } else {
+      console.error('La fuente de pointLayer no está disponible.');
+    }
   }
 }

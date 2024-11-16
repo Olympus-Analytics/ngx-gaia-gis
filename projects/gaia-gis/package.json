@@ -1,6 +1,6 @@
 {
-  "name": "gaia-gis",
-  "version": "0.0.1",
+  "name": "ngx-gaia-gis",
+  "version": "1.0.3",
   "peerDependencies": {
     "@angular/common": "^18.2.0",
     "@angular/core": "^18.2.0"
@@ -11,5 +11,6 @@
     "ol-hashed": "^2.1.0",
     "tslib": "^2.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "license":"AGPL-3.0-only"
 }
