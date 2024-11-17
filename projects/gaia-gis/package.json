@@ -1,6 +1,6 @@
 {
   "name": "ngx-gaia-gis",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "peerDependencies": {
     "@angular/common": "^18.2.0",
     "@angular/core": "^18.2.0"
@@ -30,5 +30,15 @@
   "author": "We are Olympus Analytics, and our email is contactanos@olympus-analytics.dev",
   "bugs": {
     "url": "https://github.com/Olympus-Analytics/ngx-gaia-gis/issues"
+  },
+  "main": "bundles/ngx-gaia-gis.umd.js",
+  "module": "fesm2020/ngx-gaia-gis.mjs",
+  "es2015": "fesm2015/ngx-gaia-gis.js",
+  "typings": "ngx-gaia-gis.d.ts",
+  "exports": {
+    ".": {
+      "import": "./fesm2020/ngx-gaia-gis.mjs",
+      "require": "./bundles/ngx-gaia-gis.umd.js"
+    }
   }
 }

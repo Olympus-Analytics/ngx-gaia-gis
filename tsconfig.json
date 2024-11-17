@@ -6,6 +6,9 @@
     "paths": {
       "Gaia-GIS": [
         "./dist/gaia-gis"
+      ],
+      "ngx-gaia-gis": [
+        "./dist/ngx-gaia-gis"
       ]
     },
     "outDir": "./dist/out-tsc",

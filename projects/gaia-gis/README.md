@@ -38,7 +38,7 @@ Here is an example of how to use `GaiaGisService` in an Angular application:
 
 ```typescript
 import { Component, OnInit } from "@angular/core";
-import { GaiaGisService } from "./gaia-gis.service";
+import { GaiaGisService } from "ngx-gaia-gis";
 
 @Component({
   selector: "app-map",
