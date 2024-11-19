@@ -18,8 +18,6 @@ export class AppComponent implements OnInit {
     [-74.006, 40.7128], // New York
   ];
   ngOnInit() {
-    this.gaiaService.addPoints(this.samplePoints);
-
     this.gaiaService.initializeMap('map', {
       design: MapsDesign.GNOSIS_EARTH,
     });
@@ -27,6 +25,7 @@ export class AppComponent implements OnInit {
     this.gaiaService.addRasterLayer(
       'http://oin-hotosm.s3.amazonaws.com/56f9b5a963ebf4bc00074e70/0/56f9c2d42b67227a79b4faec.tif'
     );
+    this.gaiaService.addPoints(this.samplePoints);
   }
 
   addSamplePoints(): void {

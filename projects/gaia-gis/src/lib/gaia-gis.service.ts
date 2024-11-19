@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import TileLayer from 'ol/layer/tile';
+import TileLayer from 'ol/layer/Tile';
 import { XYZ } from 'ol/source';
 import { transformExtent, fromLonLat } from 'ol/proj';
 import { Feature, Map, View } from 'ol';
@@ -11,7 +11,8 @@ import 'ol/ol.css';
 import VectorSource from 'ol/source/Vector';
 import { MapsDesign } from './interfaces/MapDesigns';
 import OSM from 'ol/source/OSM';
-import Overlay from 'ol/Overlay';
+import { Vector } from 'ol/source';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -159,35 +160,27 @@ export class GaiaGisService {
    * @param {[number, number][]} points - The list of points to add to the map.
    * @param {string} [iconUrl=''] - The URL of the icon to use for the points.
    */
-  addPoints(points: [number, number][], iconUrl: string = ''): void {
+  addPoints(
+    points: [number, number][],
+    iconUrl: string = 'https://docs.maptiler.com/openlayers/examples/default-marker/marker-icon.png'
+  ): void {
     console.log('Añadiendo puntos al mapa...');
     const features = points.map((point) => {
-      const feature = new Feature({
-        geometry: new Point(fromLonLat(point)),
+      const marker = new VectorLayer({
+        source: new Vector({
+          features: [
+            new Feature({
+              geometry: new Point(fromLonLat(point)),
+            }),
+          ],
+        }),
+        style: new Style({
+          image: new Icon({
+            src: iconUrl,
+          }),
+        }),
       });
-
-      if (iconUrl) {
-        feature.setStyle(
-          new Style({
-            image: new Icon({
-              src: iconUrl,
-              scale: 0.1,
-            }),
-          })
-        );
-      } else {
-        feature.setStyle(
-          new Style({
-            image: new CircleStyle({
-              radius: 5,
-              fill: new Fill({ color: 'red' }),
-              stroke: new Stroke({ color: 'black', width: 1 }),
-            }),
-          })
-        );
-      }
-
-      return feature;
+      this.map.addLayer(marker);
     });
 
     const source = this.pointLayer.getSource();
