@@ -2,8 +2,8 @@
   "name": "ngx-gaia-gis",
   "version": "1.0.5",
   "peerDependencies": {
-    "@angular/common": "^18.2.0",
-    "@angular/core": "^18.2.0"
+    "@angular/common": "^19.0.1",
+    "@angular/core": "^19.0.1"
   },
   "description": "GaiaGisService is an Angular library that simplifies the integration of interactive maps using OpenLayers. It allows for visualizing raster maps, adding custom points, and adjusting views easily, making it ideal for developers who need to implement geospatial features in their web applications.",
   "dependencies": {
