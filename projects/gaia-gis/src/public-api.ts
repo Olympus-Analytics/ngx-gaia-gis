@@ -3,7 +3,7 @@
  */
 
 import { GaiaGisComponent } from '../gaia-gis/gaia-gis.component';
-export * from './lib/gaia-gis.service';
-export * from './lib/interfaces/MapDesigns';
+export * from '../gaia-gis/gaia-gis.service';
+export * from './lib/interfaces';
 
 export { GaiaGisComponent };

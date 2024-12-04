@@ -9,10 +9,10 @@ import VectorLayer from 'ol/layer/Vector';
 import { FitOptions } from 'ol/View';
 import 'ol/ol.css';
 import VectorSource from 'ol/source/Vector';
-import { MapsDesign } from './interfaces/MapDesigns';
+import { MapsDesign } from '../src/lib/interfaces/MapDesigns';
 import OSM from 'ol/source/OSM';
 import { Vector } from 'ol/source';
-import { Option } from './interfaces/options.model';
+import { Option } from '../src/lib/interfaces/options.model';
 
 @Injectable({
   providedIn: 'root',
