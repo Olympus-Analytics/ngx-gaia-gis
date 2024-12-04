@@ -3,11 +3,10 @@ import { GaiaGisService } from '../../../gaia-gis/src/lib/gaia-gis.service';
 import { MapsDesign } from '../../../gaia-gis/src/public-api';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+    selector: 'app-root',
+    imports: [],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
   gaiaService = inject(GaiaGisService);
