@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
   ];
   ngOnInit() {
     this.gaiaService.initializeMap('map', {
-      design: MapsDesign.GNOSIS_EARTH,
+      design: MapsDesign.CARTOCDN,
     });
 
     this.gaiaService.addRasterLayer(
