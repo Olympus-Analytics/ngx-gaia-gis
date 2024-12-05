@@ -9,11 +9,11 @@ import VectorLayer from 'ol/layer/Vector';
 import { FitOptions } from 'ol/View';
 import 'ol/ol.css';
 import VectorSource from 'ol/source/Vector';
-import { MapsDesign } from '../src/lib/interfaces/MapDesigns';
+import { MapsDesign } from '../src/lib/interfaces/';
 import OSM from 'ol/source/OSM';
-import { Vector } from 'ol/source';
-import { Option } from '../src/lib/interfaces/options.model';
-
+import { jsPDF } from 'jspdf';
+import Overlay from 'ol/Overlay';
+import { PointGaia } from '../src/lib/interfaces/PointGaia.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -26,7 +26,8 @@ export class GaiaGisService {
     }),
   });
   private rasterLayers: TileLayer[] = [];
-  private pointLayer!: VectorLayer;
+  private pointLayer: VectorLayer<VectorSource>;
+  private popup!: Overlay;
 
   constructor() {
     this.pointLayer = new VectorLayer({
@@ -35,16 +36,22 @@ export class GaiaGisService {
   }
 
   /**
-   * Initializes the map with a given target, center, zoom level, and design.
+   * Initializes the map with the specified target, center, zoom level, and design.
    * @param {string} target - The target element ID for the map.
-   * @param {[number, number]} [center=[0, 0]] - The initial center of the map.
-   * @param {number} [zoom=2] - The initial zoom level of the map.
-   * @param {MapsDesign} [design=MapsDesign.CARTOCDN] - The design of the map.
+   * @param {Object} options - Options for configuring the map.
+   * @param {[number, number]} [options.center=[0, 0]] - The initial center of the map.
+   * @param {number} [options.zoom=2] - The initial zoom level of the map.
+   * @param {string} [options.design=MapsDesign.CARTOCDN] - The design of the map.
    */
-  initializeMap(target: string, options: Option = {}): void {
+  initializeMap(
+    target: string,
+    options: {
+      center?: [number, number];
+      zoom?: number;
+      design?: MapsDesign;
+    } = {}
+  ): void {
     const { center = [0, 0], zoom = 2, design = MapsDesign.CARTOCDN } = options;
-
-    console.log('Inicializando el mapa...');
 
     let baseLayer: TileLayer;
 
@@ -56,6 +63,7 @@ export class GaiaGisService {
       baseLayer = new TileLayer({
         source: new XYZ({
           url: design,
+          crossOrigin: 'anonymous', // Add this line
         }),
       });
     } else {
@@ -64,13 +72,75 @@ export class GaiaGisService {
       });
     }
 
+    this.labels = new TileLayer({
+      source: new XYZ({
+        url: 'https://{1-4}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png',
+        attributions:
+          'Gaia-GIS by © <a href="https://carto.com/attribution">Olympus Analytics</a>',
+        crossOrigin: 'anonymous', // Add this line
+      }),
+    });
+
     this.map = new Map({
       target: target,
-      layers: [baseLayer, this.labels, this.pointLayer],
+      layers: [
+        baseLayer,
+        this.pointLayer, // Add pointLayer here
+      ],
       view: new View({
         center: fromLonLat(center),
         zoom: zoom,
       }),
+    });
+
+    this.initializePopup();
+  }
+
+  /**
+   * Initializes the popup overlay for the map.
+   */
+  private initializePopup(): void {
+    const container = document.getElementById('popup')!;
+    const content = document.getElementById('popup-content')!;
+    this.popup = new Overlay({
+      element: container,
+      autoPan: true,
+    });
+    this.map.addOverlay(this.popup);
+
+    // Variable para controlar si el popup está visible
+    let isPopupVisible = false;
+
+    this.map.on('click', (event) => {
+      const feature = this.map.forEachFeatureAtPixel(event.pixel, (feat) => feat);
+      if (feature && feature.get('info')) {
+        const coordinates = (feature.getGeometry() as Point).getCoordinates();
+        content.innerHTML = feature.get('info');
+        this.popup.setPosition(coordinates);
+
+        // Mostrar el popup con animación
+        if (!isPopupVisible) {
+          container.classList.remove('hide');
+          container.classList.add('show');
+          isPopupVisible = true;
+        }
+      } else {
+        if (isPopupVisible) {
+          // Ocultar el popup con animación
+          container.classList.remove('show');
+          container.classList.add('hide');
+          isPopupVisible = false;
+        }
+        // Asegurarse de que el popup se ocultará completamente después de la transición
+        setTimeout(() => {
+          this.popup.setPosition(undefined);
+        }, 300); // Tiempo debe coincidir con la duración de la transición CSS
+      }
+    });
+
+    // Cerrar el popup al hacer clic en el mapa en un área sin features
+    this.map.on('pointermove', (event) => {
+      this.map.getTargetElement().style.cursor = this.map.hasFeatureAtPixel(event.pixel) ? 'pointer' : '';
     });
   }
 
@@ -150,31 +220,40 @@ export class GaiaGisService {
   }
 
   /**
-   * Adds a list of points to the map.
-   * @param {[number, number][]} points - The list of points to add to the map.
-   * @param {string} [iconUrl=''] - The URL of the icon to use for the points.
+   * Adds a list of points to the map with an optional icon.
+   * @param {Array<{ coords: [number, number], info?: string }>} points - The list of points to add to the map.
+   * @param {string} [iconUrl] - The URL of the icon to use for the points.
    */
-  addPoints(
-    points: [number, number][],
-    iconUrl: string = 'https://docs.maptiler.com/openlayers/examples/default-marker/marker-icon.png'
-  ): void {
-    console.log('Añadiendo puntos al mapa...');
+  addPoints(points: PointGaia[], iconUrl?: string): void {
+    console.log('Adding points to the map...');
     const features = points.map((point) => {
-      const marker = new VectorLayer({
-        source: new Vector({
-          features: [
-            new Feature({
-              geometry: new Point(fromLonLat(point)),
-            }),
-          ],
-        }),
-        style: new Style({
-          image: new Icon({
-            src: iconUrl,
-          }),
-        }),
+      const feature = new Feature({
+        geometry: new Point(fromLonLat(point.coords)),
       });
-      this.map.addLayer(marker);
+      if (point.info) {
+        feature.set('info', point.info);
+      }
+      if (iconUrl) {
+        feature.setStyle(
+          new Style({
+            image: new Icon({
+              src: iconUrl,
+              scale: 0.1,
+            }),
+          })
+        );
+      } else {
+        feature.setStyle(
+          new Style({
+            image: new CircleStyle({
+              radius: 5,
+              fill: new Fill({ color: 'red' }),
+              stroke: new Stroke({ color: 'black', width: 1 }),
+            }),
+          })
+        );
+      }
+      return feature;
     });
 
     const source = this.pointLayer.getSource();
@@ -183,5 +262,49 @@ export class GaiaGisService {
     } else {
       console.error('La fuente de pointLayer no está disponible.');
     }
+  }
+  /**
+   * Exports the current map view to a PDF file.
+   */
+  exportGaiaMapToPdf(): void {
+    this.map.once('rendercomplete', () => {
+      const mapCanvas = document.createElement('canvas');
+      const size = this.map.getSize()!;
+      mapCanvas.width = size[0];
+      mapCanvas.height = size[1];
+      const mapContext = mapCanvas.getContext('2d')!;
+
+      const canvases = document.querySelectorAll(
+        '.ol-layer canvas'
+      ) as NodeListOf<HTMLCanvasElement>;
+      canvases.forEach((canvas) => {
+        if (canvas.width > 0) {
+          const opacity = canvas.parentElement?.style.opacity || '1';
+          mapContext.globalAlpha = parseFloat(opacity);
+
+          const transform = canvas.style.transform;
+          const matrix = transform
+            .match(/^matrix\(([^)]+)\)$/)?.[1]
+            .split(',')
+            .map(Number);
+
+          if (matrix) {
+            const domMatrix = new DOMMatrix(matrix);
+            mapContext.setTransform(domMatrix);
+          } else {
+            mapContext.setTransform(1, 0, 0, 1, 0, 0);
+          }
+
+          mapContext.drawImage(canvas, 0, 0);
+        }
+      });
+
+      const dataUrl = mapCanvas.toDataURL('image/png');
+      const pdf = new jsPDF('landscape', undefined, 'a4');
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 297, 210);
+      pdf.save('map.pdf');
+    });
+
+    this.map.renderSync();
   }
 }

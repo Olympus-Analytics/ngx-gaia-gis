@@ -1,9 +1,9 @@
 import { Component, inject, input, OnInit } from '@angular/core';
 import { GaiaGisService } from './gaia-gis.service';
-import { Option } from '../src/lib/interfaces/options.model';
+import { Option } from '../src/lib/interfaces/optionsGaia.model';
 
 @Component({
-  selector: 'lib-gaia-gis',
+  selector: 'gaia-gis',
   standalone: true,
   imports: [],
   templateUrl: './gaia-gis.component.html',
@@ -17,6 +17,5 @@ export class GaiaGisComponent implements OnInit {
   }
   initilizeMap(): void {
     this.GaiaGisService.initializeMap('map', this.options());
-    
   }
 }

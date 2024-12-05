@@ -1,11 +1,15 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { GaiaGisService } from '../../../gaia-gis/gaia-gis/gaia-gis.service';
-import { MapsDesign } from '../../../gaia-gis/src/public-api';
+import {
+  GaiaGisComponent,
+  MapsDesign,
+  Option,
+} from '../../../gaia-gis/src/public-api';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [],
+  imports: [GaiaGisComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -17,15 +21,19 @@ export class AppComponent implements OnInit {
     [13.405, 52.52], // Berlin
     [-74.006, 40.7128], // New York
   ];
-  ngOnInit() {
-    this.gaiaService.initializeMap('map', {
-      design: MapsDesign.CARTOCDN,
-    });
-
-    this.gaiaService.addRasterLayer(
-      'http://oin-hotosm.s3.amazonaws.com/56f9b5a963ebf4bc00074e70/0/56f9c2d42b67227a79b4faec.tif'
-    );
-    this.gaiaService.addPoints(this.samplePoints);
+  settings: Option = {
+    center: [0, 0],
+    zoom: 2,
+    design: MapsDesign.CARTOCDN,
+  };
+  ngOnInit(): void {
+    // Ensure that addPoints is called after the map is initialized
+    this.gaiaService.addPoints([
+      { coords: [-0.1276, 51.5074], info: 'London' },
+      { coords: [2.3522, 48.8566], info: 'Paris' },
+      { coords: [13.405, 52.52] },
+      { coords: [-74.006, 40.7128], info: 'New York' },
+    ]);
   }
 
   addSamplePoints(): void {

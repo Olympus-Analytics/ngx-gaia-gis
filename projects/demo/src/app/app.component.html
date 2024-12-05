@@ -1,4 +1,10 @@
 <div>
-  <button (click)="addSamplePoints()">Add Sample Points</button>
-  <div id="map" style="width: 100vw; height: 100vh"></div>
+  <button (click)="gaiaService.exportGaiaMapToPdf()">export pdf</button>
+  <section style="height: 100vh; width: 100vw;">
+    <gaia-gis [options]="settings"></gaia-gis>
+  </section>
+  <div id="popup" class="ol-popup">
+    <div id="popup-content"></div>
+  </div>
+
 </div>

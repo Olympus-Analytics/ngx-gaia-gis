@@ -1,4 +1,4 @@
-import { MapsDesign } from './MapDesigns';
+import { MapsDesign } from './MapDesignsGaia.model';
 
 export interface Option {
   center?: [number, number];

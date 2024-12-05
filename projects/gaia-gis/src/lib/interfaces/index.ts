@@ -1,4 +1,4 @@
-import { MapsDesign } from './MapDesigns';
-import { Option } from './options.model';
+import { MapsDesign } from './MapDesignsGaia.model';
+import { Option } from './optionsGaia.model';
 
 export { MapsDesign, Option };
