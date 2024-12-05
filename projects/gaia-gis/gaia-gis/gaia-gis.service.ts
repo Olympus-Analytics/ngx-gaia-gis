@@ -112,7 +112,10 @@ export class GaiaGisService {
     let isPopupVisible = false;
 
     this.map.on('click', (event) => {
-      const feature = this.map.forEachFeatureAtPixel(event.pixel, (feat) => feat);
+      const feature = this.map.forEachFeatureAtPixel(
+        event.pixel,
+        (feat) => feat
+      );
       if (feature && feature.get('info')) {
         const coordinates = (feature.getGeometry() as Point).getCoordinates();
         content.innerHTML = feature.get('info');
@@ -140,7 +143,11 @@ export class GaiaGisService {
 
     // Cerrar el popup al hacer clic en el mapa en un área sin features
     this.map.on('pointermove', (event) => {
-      this.map.getTargetElement().style.cursor = this.map.hasFeatureAtPixel(event.pixel) ? 'pointer' : '';
+      this.map.getTargetElement().style.cursor = this.map.hasFeatureAtPixel(
+        event.pixel
+      )
+        ? 'pointer'
+        : '';
     });
   }
 

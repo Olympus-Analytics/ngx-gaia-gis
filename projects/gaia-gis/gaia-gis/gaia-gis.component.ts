@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, Input, input, OnInit } from '@angular/core';
 import { GaiaGisService } from './gaia-gis.service';
 import { Option } from '../src/lib/interfaces/optionsGaia.model';
 
@@ -10,12 +10,16 @@ import { Option } from '../src/lib/interfaces/optionsGaia.model';
   styleUrl: './gaia-gis.component.css',
 })
 export class GaiaGisComponent implements OnInit {
-  readonly options = input<Option>();
+  @Input() options?: Option;
   GaiaGisService = inject(GaiaGisService);
   ngOnInit(): void {
     this.initilizeMap();
   }
   initilizeMap(): void {
-    this.GaiaGisService.initializeMap('map', this.options());
+    if (this.options) {
+      this.GaiaGisService.initializeMap('map', this.options);
+    } else {
+      this.GaiaGisService.initializeMap('map');
+    }
   }
 }

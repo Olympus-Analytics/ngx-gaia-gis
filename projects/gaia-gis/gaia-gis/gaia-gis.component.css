@@ -1,3 +1,4 @@
+/* Estilos del popup */
 .ol-popup {
   position: absolute;
   background-color: white;
@@ -7,21 +8,12 @@
   bottom: 12px;
   left: -50px;
   min-width: 200px;
+  /* Transiciones */
   opacity: 0;
-  transform: scale(0.5);
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
 }
 
-.ol-popup.show {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.ol-popup.hide {
-  opacity: 0;
-  transform: scale(0.5);
-}
-
+/* Flecha del popup */
 .ol-popup:after,
 .ol-popup:before {
   top: 100%;
@@ -45,4 +37,14 @@
   border-width: 11px;
   left: 48px;
   margin-left: -11px;
+}
+
+/* Estado visible del popup */
+.ol-popup.show {
+  opacity: 1;
+}
+
+/* Animación de salida */
+.ol-popup.hide {
+  opacity: 0;
 }

@@ -27,7 +27,6 @@ export class AppComponent implements OnInit {
     design: MapsDesign.CARTOCDN,
   };
   ngOnInit(): void {
-    // Ensure that addPoints is called after the map is initialized
     this.gaiaService.addPoints([
       { coords: [-0.1276, 51.5074], info: 'London' },
       { coords: [2.3522, 48.8566], info: 'Paris' },

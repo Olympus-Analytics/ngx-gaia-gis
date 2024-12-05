@@ -9,7 +9,7 @@
   "dependencies": {
     "geotiff": "^2.1.3",
     "jspdf": "^2.5.2",
-    "ol": "^10.2.1",
+    "ol": "^10.3.0",
     "ol-hashed": "^2.1.0",
     "tslib": "^2.3.0"
   },
@@ -28,7 +28,7 @@
     "OpenLayers",
     "Gaia-GIS"
   ],
-  "author": "We are Olympus Analytics, and our email is contactanos@olympus-analytics.dev",
+  "author": "Cristhian Agamez, contactanos@olympus-analytics.dev",
   "bugs": {
     "url": "https://github.com/Olympus-Analytics/ngx-gaia-gis/issues"
   },
@@ -41,5 +41,15 @@
       "import": "./fesm2020/ngx-gaia-gis.mjs",
       "require": "./bundles/ngx-gaia-gis.umd.js"
     }
+  },
+  "scripts": {
+    "build": "ng build ngx-gaia-gis",
+    "test": "ng test ngx-gaia-gis",
+    "lint": "ng lint ngx-gaia-gis",
+    "publish": "npm publish --access public"
+  },
+  "engines": {
+  "node": ">=20.0.0",
+  "npm": ">=10.0.0"
   }
 }
