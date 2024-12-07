@@ -1,6 +1,6 @@
 import { Component, inject, Input, input, OnInit } from '@angular/core';
 import { GaiaGisService } from './gaia-gis.service';
-import { Option } from '../src/lib/interfaces/optionsGaia.model';
+import { Option } from '../interfaces/optionsGaia.model';
 
 @Component({
   selector: 'gaia-gis',

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { GaiaGisService } from '../../../gaia-gis/gaia-gis/gaia-gis.service';
+import { GaiaGisService } from '../../../gaia-gis/src/lib/gaia-gis/gaia-gis.service';
 import {
   GaiaGisComponent,
   MapsDesign,

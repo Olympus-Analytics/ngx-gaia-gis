@@ -9,11 +9,11 @@ import VectorLayer from 'ol/layer/Vector';
 import { FitOptions } from 'ol/View';
 import 'ol/ol.css';
 import VectorSource from 'ol/source/Vector';
-import { MapsDesign } from '../src/lib/interfaces/';
+import { MapsDesign, Option } from '../interfaces';
 import OSM from 'ol/source/OSM';
 import { jsPDF } from 'jspdf';
 import Overlay from 'ol/Overlay';
-import { PointGaia } from '../src/lib/interfaces/PointGaia.model';
+import { PointGaia } from '../interfaces/PointGaia.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -43,14 +43,7 @@ export class GaiaGisService {
    * @param {number} [options.zoom=2] - The initial zoom level of the map.
    * @param {string} [options.design=MapsDesign.CARTOCDN] - The design of the map.
    */
-  initializeMap(
-    target: string,
-    options: {
-      center?: [number, number];
-      zoom?: number;
-      design?: MapsDesign;
-    } = {}
-  ): void {
+  initializeMap(target: string, options: Option = {}): void {
     const { center = [0, 0], zoom = 2, design = MapsDesign.CARTOCDN } = options;
 
     let baseLayer: TileLayer;

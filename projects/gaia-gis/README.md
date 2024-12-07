@@ -30,12 +30,60 @@ GaiaGisService is an Angular service that simplifies map creation and interactio
 
 ## Getting Started
 
+```typescript
+import {
+  GaiaGisComponent
+} from 'ngx-gaia-gis';
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [GaiaGisComponent],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css',
+})
+```
+
+And in the html, you should use like this
+
+```html
+<gaia-gis [options]="settings"></gaia-gis>
+```
+
+options are optionals, but in the case that you want to configure something the way is this
+
+```typescript
+import { Option } from "ngx-gaia-gis";
+```
+
+Option is a interface that you should use, this is the interface
+
+```typescript
+export interface Option {
+  center?: [number, number];
+  zoom?: number;
+  design?: MapsDesign;
+  maxZoom?: number;
+  minZoom?: number;
+}
+```
+MapsDesign is enum where you can find some maps styles.
+
+So this is a example
+
+```typescript
+settings: Option = {
+  center: [0, 0],
+  zoom: 2,
+  design: MapsDesign.CARTOCDN,
+};
+```
+
 ### Example Usage
 
 Here is an example of how to use `GaiaGisService` in an Angular application:
 
 #### 1. Add the Service to Your Component
-
+##### This is another way to initialize the map
 ```typescript
 import { Component, OnInit } from "@angular/core";
 import { GaiaGisService } from "ngx-gaia-gis";
@@ -56,7 +104,7 @@ export class MapComponent implements OnInit {
   }
 }
 ```
-
+##### Functions that you could use:
 #### 2. Add Raster Layers
 
 ```typescript
@@ -68,15 +116,16 @@ addLayer(): void {
 #### 3. Add Points
 
 ```typescript
+import {PointGaia} from "ngx-gaia-gis";
 this.gaiaGisService.addPoints(
   [
-    [-74.006, 40.7128],
-    [-118.2437, 34.0522],
+    {coords: [-74.006, 40.7128], info: "NYC"},
+    {coords: [-118.2437, 34.0522], info: "LA"}
   ], // NYC & LA
   "https://example.com/icon.png"
 );
 ```
-
+if you don't give the info, theres no problem cause is optional, just the popup wont'appear
 ## API Documentation
 
 ### Methods
@@ -112,4 +161,6 @@ Fits the map to a specified extent.
 
 Adds points to the map with optional icons or custom styles.
 
+#### `exportGaiaMapToPdf`
 
+Export the current map view to a PDF file.
