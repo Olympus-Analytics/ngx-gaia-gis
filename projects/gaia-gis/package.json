@@ -1,6 +1,6 @@
 {
   "name": "ngx-gaia-gis",
-  "version": "1.0.5",
+  "version": "1.0.5-1",
   "peerDependencies": {
     "@angular/common": "^19.0.1",
     "@angular/core": "^19.0.1",
