@@ -15,6 +15,8 @@ GaiaGisService is an Angular service that simplifies map creation and interactio
 
    ```bash
    npm install ol
+   npm install jspdf
+   npm install geotiff
    ```
 
 2. Add the OpenLayers CSS to your application:
@@ -125,7 +127,7 @@ this.gaiaGisService.addPoints(
   "https://example.com/icon.png"
 );
 ```
-if you don't give the info, theres no problem cause is optional, just the popup wont'appear
+if you don't give the info, there's no problem cause is optional, just the popup wont'appear
 ## API Documentation
 
 ### Methods
@@ -144,14 +146,22 @@ Initializes a map with the specified options.
 #### `addRasterLayer`
 
 Adds a raster layer using a GeoTIFF file URL.
+- **Parameters**:
+ - `url`: the URL of the GeoTIFF(COG)
 
 #### `removeRasterLayer`
 
 Removes a raster layer by its index.
+- **Parameters**:
+ - `index`: The index of the raster layer to remove.
+
 
 #### `setView`
 
 Sets the map's center and zoom level.
+- **Parameters**:
+ - `center`: Map center in `[longitude, latitude]` format.
+ - `zoom`: Zoom level.
 
 #### `zoomToExtent`
 
