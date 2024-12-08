@@ -5,7 +5,12 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'Ngx - Gaia GIS Documentation',
+      favicon: '/favicon.svg',
+      logo:{
+
+        src: './src/assets/logo.webp',
+      },
+			title: 'Gaia GIS Documentation',
 			social: {
 				github: 'https://github.com/Olympus-Analytics/ngx-gaia-gis.git',
 			},
