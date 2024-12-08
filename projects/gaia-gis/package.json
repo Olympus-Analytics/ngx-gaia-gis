@@ -1,6 +1,6 @@
 {
   "name": "ngx-gaia-gis",
-  "version": "1.0.5-1",
+  "version": "1.0.5-1.1",
   "peerDependencies": {
     "@angular/common": "^19.0.1",
     "@angular/core": "^19.0.1",
@@ -33,6 +33,7 @@
     "Points"
   ],
   "author": "Cristhian Agamez, contactanos@olympus-analytics.dev",
+  "homepage": "https://gaia-gis.olympus-analytics.dev/",
   "bugs": {
     "url": "https://github.com/Olympus-Analytics/ngx-gaia-gis/issues"
   },
@@ -42,8 +43,7 @@
   "typings": "ngx-gaia-gis.d.ts",
   "exports": {
     ".": {
-      "import": "./fesm2020/ngx-gaia-gis.mjs",
-      "require": "./bundles/ngx-gaia-gis.umd.js"
+      "import": "./fesm2020/ngx-gaia-gis.mjs"
     }
   },
   "scripts": {
