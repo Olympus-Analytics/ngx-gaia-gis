@@ -5,9 +5,9 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'My Docs',
+			title: 'Ngx - Gaia GIS Documentation',
 			social: {
-				github: 'https://github.com/withastro/starlight',
+				github: 'https://github.com/Olympus-Analytics/ngx-gaia-gis.git',
 			},
 			sidebar: [
 				{
@@ -29,6 +29,7 @@ export default defineConfig({
           label: 'Advanced functions',
           items:[
             {label: 'Angular gaia-gis Service', slug: 'advanced-usage/gaia-gis-service'},
+            {label: "Methods", slug: 'advanced-usage/methods'},
           ]
         }
 			],
