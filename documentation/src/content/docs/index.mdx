@@ -5,14 +5,15 @@ template: splash
 hero:
   tagline: Welcome to Gai Gis Documentation!
   image:
-    file: ../../assets/houston.webp
+    file: ../../assets/logo.webp
   actions:
     - text: Get Started
       link: /getting-started/getting-started/
       icon: right-arrow
-    - text: API Reference
-      link: /installation/api-reference/
-      icon: right-arrow
+    - text: View on GitHub
+      icon: external
+      variant: minimal
+      link: https://github.com/Olympus-Analytics/ngx-gaia-gis.git
 ---
 
 import { Card, CardGrid } from "@astrojs/starlight/components";
@@ -20,16 +21,16 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 ## Next steps
 
 <CardGrid stagger>
-  <Card title="Installation" icon="download">
+  <Card title="Installation" icon="seti:npm">
     Learn how to install GaiaGisService in your Angular project.
   </Card>
   <Card title="Getting Started" icon="rocket">
     Follow the guide to get started with GaiaGisService.
   </Card>
-  <Card title="API Reference" icon="book">
+  <Card title="API Reference" icon="seti:markdown">
     Explore the API documentation for GaiaGisService.
   </Card>
-  <Card title="Examples" icon="code">
-    Check out examples of how to use GaiaGisService.
+  <Card title="Examples" icon="seti:typescript">
+    Check out examples of how to use Gaia Gis.
   </Card>
 </CardGrid>
