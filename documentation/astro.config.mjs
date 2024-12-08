@@ -11,16 +11,26 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: 'Guides',
+					label: 'Installation',
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
+						{ label: 'Installation', slug: 'installation/installation' },
 					],
 				},
 				{
-					label: 'Reference',
-					autogenerate: { directory: 'reference' },
+					label: 'Getting Started',
+					items: [
+						// Each item here is one entry in the navigation menu.
+						{ label: 'Getting started', slug: 'getting-started/getting-started' },
+            { label: 'Configuration', slug: 'getting-started/configurations' },
+					],
 				},
+        {
+          label: 'Advanced functions',
+          items:[
+            {label: 'Angular gaia-gis Service', slug: 'advanced-usage/gaia-gis-service'},
+          ]
+        }
 			],
 		}),
 	],

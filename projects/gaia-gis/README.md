@@ -14,6 +14,7 @@ GaiaGisService is an Angular service that simplifies map creation and interactio
 1. Install the library dependencies:
 
    ```bash
+   npm install ngx-gaia-gis
    npm install ol
    npm install jspdf
    npm install geotiff

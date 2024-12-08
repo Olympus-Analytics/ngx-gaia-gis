@@ -3,11 +3,13 @@ title: Installation
 description: How to install GaiaGisService in your Angular project.
 ---
 
-# Installation
 
 To use GaiaGisService in your Angular application, follow these steps:
-
-## 1. Install Dependencies
+## 1. Install the library
+```bash
+npm install ngx-gaia-gis
+```
+## 2. Install Dependencies
 
 Install the necessary packages using npm:
 
@@ -15,7 +17,7 @@ Install the necessary packages using npm:
 npm install ol jspdf geotiff
 ```
 
-## 2. Include OpenLayers CSS
+## 3. Include OpenLayers CSS
 In your angular.json file, include the OpenLayers CSS in the styles array:
 ```CSS
 "styles": [
