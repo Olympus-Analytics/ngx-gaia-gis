@@ -3,6 +3,9 @@
   "dest": "../../dist/gaia-gis",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "assets": [
+    "README.md"
+  ]
 
 }
