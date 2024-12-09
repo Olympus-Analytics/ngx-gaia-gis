@@ -12,7 +12,7 @@ Here is an example of how to use `GaiaGisService` in an Angular application prog
 Another way to initialize the map is by using the `GaiaGisService` directly:
 
 ```typescript
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { GaiaGisService } from "ngx-gaia-gis";
 
 @Component({
@@ -21,7 +21,7 @@ import { GaiaGisService } from "ngx-gaia-gis";
   styles: [".map-container { width: 100%; height: 400px; }"],
 })
 export class MapComponent implements OnInit {
-  constructor(private gaiaGisService: GaiaGisService) {}
+  private gaiaGisService = inject(GaiaGisService);
 
   ngOnInit(): void {
     this.gaiaGisService.initializeMap("map", {

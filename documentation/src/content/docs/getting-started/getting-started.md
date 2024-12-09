@@ -14,7 +14,7 @@ Add the GaiaGisComponent to the module or component where you want to use it:
 ```typescript
 import { Component } from "@angular/core";
 import { GaiaGisComponent } from "ngx-gaia-gis";
-
+import { Option } from "ngx-gaia-gis";
 @Component({
   selector: "app-root",
   standalone: true,
@@ -24,7 +24,7 @@ import { GaiaGisComponent } from "ngx-gaia-gis";
 })
 export class AppComponent {
   // Optional configuration for the map
-  settings = {
+  settings: Option = {
     center: [0, 0],
     zoom: 2,
     design: MapsDesign.CARTOCDN,
@@ -39,4 +39,3 @@ In the HTML file, include the <gaia-gis> component and bind the settings options
 ```html
 <gaia-gis [options]="settings"></gaia-gis>
 ```
-

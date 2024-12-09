@@ -1,6 +1,6 @@
 {
   "name": "ngx-gaia-gis",
-  "version": "1.0.5-1.1",
+  "version": "1.0.5-2",
   "peerDependencies": {
     "@angular/common": "^19.0.1",
     "@angular/core": "^19.0.1",
@@ -14,7 +14,6 @@
 
     "tslib": "^2.3.0"
   },
-  "sideEffects": false,
   "license": "AGPL-3.0-only",
   "repository": {
     "type": "git",
@@ -37,13 +36,15 @@
   "bugs": {
     "url": "https://github.com/Olympus-Analytics/ngx-gaia-gis/issues"
   },
-  "main": "bundles/ngx-gaia-gis.umd.js",
-  "module": "fesm2020/ngx-gaia-gis.mjs",
-  "es2015": "fesm2015/ngx-gaia-gis.js",
+ 
+  "module": "fesm2022/ngx-gaia-gis.mjs",
+
   "typings": "ngx-gaia-gis.d.ts",
   "exports": {
     ".": {
-      "import": "./fesm2020/ngx-gaia-gis.mjs"
+      "types": "./ngx-gaia-gis.d.ts",
+    "require": "./bundles/ngx-gaia-gis.umd.js",
+    "import": "./fesm2022/ngx-gaia-gis.mjs"
     }
   },
   "scripts": {
@@ -53,7 +54,7 @@
     "publish": "npm publish --access public"
   },
   "engines": {
-  "node": ">=20.0.0",
-  "npm": ">=10.0.0"
-  }
+  "node": ">=14.0.0",
+  "npm": ">=6.0.0"
+}
 }
