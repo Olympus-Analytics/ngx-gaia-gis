@@ -11,7 +11,7 @@
   },
   "description": "GaiaGisService is an Angular library that simplifies the integration of interactive maps using OpenLayers. It allows for visualizing raster maps, adding custom points, and adjusting views easily, making it ideal for developers who need to implement geospatial features in their web applications.",
   "dependencies": {
-
+    "ng-packagr": "^20.1.0",
     "tslib": "^2.3.0"
   },
   "license": "AGPL-3.0-only",
@@ -36,15 +36,13 @@
   "bugs": {
     "url": "https://github.com/Olympus-Analytics/ngx-gaia-gis/issues"
   },
- 
   "module": "fesm2022/ngx-gaia-gis.mjs",
-
   "typings": "ngx-gaia-gis.d.ts",
   "exports": {
     ".": {
       "types": "./ngx-gaia-gis.d.ts",
-    "require": "./bundles/ngx-gaia-gis.umd.js",
-    "import": "./fesm2022/ngx-gaia-gis.mjs"
+      "require": "./bundles/ngx-gaia-gis.umd.js",
+      "import": "./fesm2022/ngx-gaia-gis.mjs"
     }
   },
   "scripts": {
@@ -54,7 +52,7 @@
     "publish": "npm publish --access public"
   },
   "engines": {
-  "node": ">=14.0.0",
-  "npm": ">=6.0.0"
-}
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
 }
