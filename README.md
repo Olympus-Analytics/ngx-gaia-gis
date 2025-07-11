@@ -1,6 +1,9 @@
-# GaiaGisService
+# ngx-gaia-gis
 
-GaiaGisService is an Angular service that simplifies map creation and interaction using the powerful OpenLayers library. It enables developers to quickly integrate maps, raster layers, and custom points into their applications.
+[![npm version](https://badge.fury.io/js/ngx-gaia-gis.svg)](https://badge.fury.io/js/ngx-gaia-gis)
+[![Angular](https://img.shields.io/badge/Angular-20-red.svg)](https://angular.io/)
+
+GaiaGisService is an Angular library that simplifies the integration of interactive maps using OpenLayers. It allows for visualizing raster maps, adding custom points, and adjusting views easily, making it ideal for developers who need to implement geospatial features in their web applications.
 
 ## Features
 
@@ -9,36 +12,61 @@ GaiaGisService is an Angular service that simplifies map creation and interactio
 - **Point Management**: Add points with custom icons or styles.
 - **Flexible View Controls**: Change map center, zoom, or fit to extents dynamically.
 
+## Requirements
+
+- Angular 20+
+- TypeScript 5.8+
+
 ## Installation
 
-1. Install the library dependencies:
+Install the library and its dependencies:
 
-   ```bash
-   npm install ol
-   ```
+```bash
+npm install ngx-gaia-gis ol geotiff jspdf
+```
 
-2. Add the OpenLayers CSS to your application:
+Add the OpenLayers CSS to your `angular.json`:
 
-   ```json
-   // angular.json
-   "styles": [
-     "src/styles.css",
-   ]
-   ```
-
-3. Copy the `GaiaGisService` class to your project and ensure the necessary imports are configured.
+```json
+"styles": [
+  "src/styles.css",
+  "node_modules/ol/ol.css"
+]
+```
 
 ## Getting Started
 
-### Example Usage
+### Quick Setup
 
-Here is an example of how to use `GaiaGisService` in an Angular application:
+Import the component in your Angular application:
 
-#### 1. Add the Service to Your Component
+```typescript
+import { Component } from '@angular/core';
+import { GaiaGisComponent, Option, MapsDesign } from 'ngx-gaia-gis';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [GaiaGisComponent],
+  template: '<gaia-gis [options]="settings"></gaia-gis>',
+  styleUrl: './app.component.css',
+})
+export class AppComponent {
+  settings: Option = {
+    center: [0, 0],
+    zoom: 2,
+    design: MapsDesign.CARTOCDN,
+  };
+}
+```
+
+### Advanced Usage with Service
+
+For more control, inject the service directly:
 
 ```typescript
 import { Component, OnInit } from "@angular/core";
-import { GaiaGisService } from "./gaia-gis.service";
+import { GaiaGisService, PointGaia } from "ngx-gaia-gis";
 
 @Component({
   selector: "app-map",
@@ -54,27 +82,19 @@ export class MapComponent implements OnInit {
       zoom: 12,
     });
   }
+
+  addLayer(): void {
+    this.gaiaGisService.addRasterLayer('https://example.com/map.tif');
+  }
+
+  addPoints(): void {
+    const points: PointGaia[] = [
+      { coords: [-74.006, 40.7128], info: "New York City" },
+      { coords: [-118.2437, 34.0522], info: "Los Angeles" }
+    ];
+    this.gaiaGisService.addPoints(points, "https://example.com/icon.png");
+  }
 }
-```
-
-#### 2. Add Raster Layers
-
-```typescript
-addLayer(): void {
-  this.gaiaGisService.addRasterLayer('https://example.com/map.tif');
-}
-```
-
-#### 3. Add Points
-
-```typescript
-this.gaiaGisService.addPoints(
-  [
-    [-74.006, 40.7128],
-    [-118.2437, 34.0522],
-  ], // NYC & LA
-  "https://example.com/icon.png"
-);
 ```
 
 ## API Documentation
@@ -111,5 +131,32 @@ Fits the map to a specified extent.
 #### `addPoints`
 
 Adds points to the map with optional icons or custom styles.
+
+#### `exportGaiaMapToPdf`
+
+Export the current map view to a PDF file.
+
+## Changelog
+
+### v1.0.6
+- ✅ Angular 20 support
+- ✅ TypeScript 5.8 compatibility
+- ✅ Updated peer dependencies
+- ✅ Improved build configuration
+
+## Contributing
+
+Please read [CONTRIBUTE.md](CONTRIBUTE.md) for details on our code of conduct and the process for submitting pull requests.
+
+## License
+
+This project is licensed under the AGPL-3.0-only License - see the [LICENSE.txt](LICENSE.txt) file for details.
+
+## Links
+
+- [Homepage](https://gaia-gis.olympus-analytics.dev/)
+- [npm Package](https://www.npmjs.com/package/ngx-gaia-gis)
+- [GitHub Repository](https://github.com/Olympus-Analytics/ngx-gaia-gis)
+- [Issues](https://github.com/Olympus-Analytics/ngx-gaia-gis/issues)
 
 

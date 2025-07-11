@@ -4,12 +4,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
-      "Gaia-GIS": [
-        "./dist/gaia-gis"
-      ],
-      "ngx-gaia-gis": [
-        "./dist/ngx-gaia-gis"
-      ]
+      "Gaia-GIS": ["./dist/gaia-gis"],
+      "ngx-gaia-gis": ["./dist/gaia-gis"]
     },
     "outDir": "./dist/out-tsc",
     "strict": true,
@@ -26,10 +22,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
-    "lib": [
-      "ES2022",
-      "dom"
-    ]
+    "lib": ["ES2022", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
