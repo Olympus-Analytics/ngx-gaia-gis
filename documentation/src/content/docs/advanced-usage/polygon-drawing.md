@@ -44,7 +44,7 @@ export class MapComponent {
 Use the GaiaGisService with Angular signals for reactive state management:
 
 ```typescript
-import { Component, OnInit, computed } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { GaiaGisService, PolygonGaia } from 'ngx-gaia-gis';
 
 @Component({
@@ -71,6 +71,9 @@ import { GaiaGisService, PolygonGaia } from 'ngx-gaia-gis';
   `,
 })
 export class MapComponent implements OnInit {
+  // Inject the service using the modern inject() function
+  public readonly gaiaGisService = inject(GaiaGisService);
+
   // Expose service signals for template usage
   public readonly canStartDrawing = computed(() => 
     !this.gaiaGisService.isDrawingPolygon() && 
@@ -80,8 +83,6 @@ export class MapComponent implements OnInit {
   public readonly canCancel = computed(() => 
     this.gaiaGisService.isDrawingPolygon()
   );
-
-  constructor(public gaiaGisService: GaiaGisService) {}
 
   ngOnInit(): void {
     this.gaiaGisService.initializeMap('map', {
@@ -162,7 +163,7 @@ The ngx-gaia-gis library now uses Angular signals instead of RxJS observables fo
 ### Basic Pattern
 
 ```typescript
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { GaiaGisService } from 'ngx-gaia-gis';
 
 @Component({
@@ -184,7 +185,7 @@ import { GaiaGisService } from 'ngx-gaia-gis';
   `
 })
 export class PolygonMapComponent {
-  constructor(public gaiaGisService: GaiaGisService) {}
+  public readonly gaiaGisService = inject(GaiaGisService);
 }
 ```
 
@@ -297,6 +298,8 @@ interface PolygonGaia {
 For more advanced scenarios, access the service signals directly in your template or computed signals:
 
 ```typescript
+import { Component, inject } from '@angular/core';
+
 @Component({
   template: `
     <div class="polygon-info">
@@ -312,7 +315,7 @@ For more advanced scenarios, access the service signals directly in your templat
   `
 })
 export class PolygonComponent {
-  constructor(public gaiaGisService: GaiaGisService) {}
+  public readonly gaiaGisService = inject(GaiaGisService);
   
   processLatestPolygon(): void {
     const polygon = this.gaiaGisService.getLatestPolygon();
@@ -428,6 +431,8 @@ this.polygonLayer = new VectorLayer({
 ### Area Selection
 
 ```typescript
+import { Component, computed, inject } from '@angular/core';
+
 @Component({
   template: `
     <div class="area-selection">
@@ -442,6 +447,8 @@ this.polygonLayer = new VectorLayer({
   `
 })
 export class AreaSelectionComponent {
+  public readonly gaiaGisService = inject(GaiaGisService);
+
   // Computed signal that processes polygon when it's completed
   selectedArea = computed(() => {
     const polygon = this.gaiaGisService.currentPolygon();
@@ -456,14 +463,15 @@ export class AreaSelectionComponent {
     }
     return null;
   });
-
-  constructor(public gaiaGisService: GaiaGisService) {}
 }
 ```
 
 ### Geographic Forms
 
 ```typescript
+import { Component, inject } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+
 @Component({
   template: `
     <form [formGroup]="locationForm">
@@ -485,15 +493,13 @@ export class AreaSelectionComponent {
   `
 })
 export class GeographicFormComponent {
+  public readonly gaiaGisService = inject(GaiaGisService);
+  private readonly fb = inject(FormBuilder);
+
   locationForm = this.fb.group({
     boundary: [''],
     areaId: ['']
   });
-
-  constructor(
-    public gaiaGisService: GaiaGisService,
-    private fb: FormBuilder
-  ) {}
 
   saveBoundary(): void {
     const polygon = this.gaiaGisService.currentPolygon();
@@ -510,6 +516,8 @@ export class GeographicFormComponent {
 ### Spatial Analysis
 
 ```typescript
+import { Component, computed, inject } from '@angular/core';
+
 @Component({
   template: `
     <div class="spatial-analysis">
@@ -523,6 +531,8 @@ export class GeographicFormComponent {
   `
 })
 export class SpatialAnalysisComponent {
+  public readonly gaiaGisService = inject(GaiaGisService);
+
   // Computed signal that triggers analysis when polygon is completed
   analysisResult = computed(() => {
     const polygon = this.gaiaGisService.currentPolygon();
@@ -534,8 +544,6 @@ export class SpatialAnalysisComponent {
     }
     return null;
   });
-
-  constructor(public gaiaGisService: GaiaGisService) {}
 
   private performSpatialAnalysis(coordinates: [number, number][]) {
     // Perform your spatial analysis here
@@ -549,6 +557,8 @@ export class SpatialAnalysisComponent {
 ### Error Handling
 
 ```typescript
+import { Component, computed, inject } from '@angular/core';
+
 @Component({
   template: `
     <div class="polygon-handler">
@@ -567,6 +577,8 @@ export class SpatialAnalysisComponent {
   `
 })
 export class PolygonHandlerComponent {
+  public readonly gaiaGisService = inject(GaiaGisService);
+
   polygonError = computed(() => {
     const polygon = this.gaiaGisService.currentPolygon();
     const state = this.gaiaGisService.drawingState();
@@ -588,8 +600,6 @@ export class PolygonHandlerComponent {
     
     return polygon && state === 'completing' && !this.polygonError();
   });
-
-  constructor(public gaiaGisService: GaiaGisService) {}
 
   private validatePolygon(polygon: PolygonGaia): void {
     if (polygon.coordinates.length < 4) {
@@ -614,6 +624,8 @@ ngOnDestroy(): void {
 ### Validation
 
 ```typescript
+import { Component, computed, inject } from '@angular/core';
+
 @Component({
   template: `
     <div class="polygon-validation">
@@ -626,6 +638,8 @@ ngOnDestroy(): void {
   `
 })
 export class PolygonValidationComponent {
+  public readonly gaiaGisService = inject(GaiaGisService);
+
   validationResult = computed(() => {
     const polygon = this.gaiaGisService.currentPolygon();
     const state = this.gaiaGisService.drawingState();
@@ -639,8 +653,6 @@ export class PolygonValidationComponent {
     }
     return null;
   });
-
-  constructor(public gaiaGisService: GaiaGisService) {}
 
   private validatePolygon(polygon: PolygonGaia): { isValid: boolean; message: string } {
     const coords = polygon.coordinates;
@@ -689,6 +701,8 @@ export class PolygonValidationComponent {
 ### Debug Mode
 
 ```typescript
+import { Component, inject } from '@angular/core';
+
 @Component({
   template: `
     <div class="debug-info">
@@ -709,6 +723,6 @@ export class PolygonValidationComponent {
   `
 })
 export class DebugPolygonComponent {
-  constructor(public gaiaGisService: GaiaGisService) {}
+  public readonly gaiaGisService = inject(GaiaGisService);
 }
 ``` 
