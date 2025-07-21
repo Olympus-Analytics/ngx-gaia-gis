@@ -1,20 +1,15 @@
-# Polygon Drawing Tool
+---
+title: Polygon Drawing Tool
+description: Interactive polygon drawing tool with coordinate output and event emission.
+---
 
 The ngx-gaia-gis library includes an interactive polygon drawing tool that allows users to draw polygons directly on the map and receive coordinate data through events.
-
-## Overview
-
-The polygon drawing feature provides:
-- Interactive polygon creation with mouse clicks
-- Real-time visual feedback during drawing
-- Animated starting point highlighting with pulsing green circle
-- Keyboard shortcuts for completion and cancellation
-- Event emission with coordinate data
-- Automatic coordinate conversion to lat/lng format
 
 ## Basic Usage
 
 ### Component Approach
+
+Add the GaiaGisComponent to your module or component:
 
 ```typescript
 import { Component } from '@angular/core';
@@ -40,12 +35,13 @@ export class MapComponent {
 
   handlePolygonComplete(polygon: PolygonGaia): void {
     console.log('Polygon completed:', polygon);
-    // Process the polygon data
   }
 }
 ```
 
 ### Service Approach
+
+Use the GaiaGisService for programmatic control:
 
 ```typescript
 import { Component, OnInit } from '@angular/core';
@@ -81,61 +77,60 @@ export class MapComponent implements OnInit {
   clearAllPolygons(): void {
     this.gaiaGisService.clearPolygons();
   }
-
-  private processPolygon(polygon: PolygonGaia): void {
-    // Handle the completed polygon
-    console.log('Coordinates:', polygon.coordinates);
-    console.log('Properties:', polygon.properties);
-  }
 }
 ```
 
-## API Reference
+## Methods
 
-### Service Methods
+### `startPolygonDraw`
 
-#### `startPolygonDraw(): void`
 Activates polygon drawing mode on the map.
 
-**Behavior:**
-- Changes cursor to crosshair
-- Enables click-to-add-vertex functionality
-- Adds keyboard event listeners
-- Creates visual feedback for drawing
+- **Behavior:**
+  - Changes cursor to crosshair
+  - Enables click-to-add-vertex functionality
+  - Adds keyboard event listeners
+  - Creates visual feedback with pulsing green starting point
 
-#### `cancelPolygonDraw(): void`
+### `cancelPolygonDraw`
+
 Cancels the current polygon drawing operation.
 
-**Behavior:**
-- Removes drawing interaction
-- Clears incomplete polygon
-- Restores normal cursor
-- Removes keyboard listeners
+- **Behavior:**
+  - Removes drawing interaction
+  - Clears incomplete polygon
+  - Restores normal cursor
+  - Removes keyboard listeners
 
-#### `clearPolygons(): void`
+### `clearPolygons`
+
 Removes all drawn polygons from the map.
 
-**Behavior:**
-- Clears the polygon layer source
-- Removes all polygon features from the map
+- **Behavior:**
+  - Clears the polygon layer source
+  - Removes all polygon features from the map
+  - Resets polygon signals
 
-### Events
+### `removePolygonById`
 
-#### `polygonDrawn: EventEmitter<PolygonGaia>`
+Removes a specific polygon by its ID.
+
+- **Parameters:**
+  - `id`: The unique ID of the polygon to remove
+
+## Events
+
+### `polygonDrawn`
+
 Emitted when a polygon drawing is completed.
 
 **Event Data:**
 ```typescript
 interface PolygonGaia {
   coordinates: [number, number][]; // Array of [longitude, latitude] pairs
-  properties?: Record<string, any>; // Optional metadata
+  properties?: Record<string, any>; // Optional metadata including id and createdAt
 }
 ```
-
-### Component Output
-
-#### `(polygonDrawn)="handler($event)"`
-Component output event for polygon completion.
 
 ## Drawing Instructions
 
@@ -143,11 +138,7 @@ Component output event for polygon completion.
 
 1. **Activate Drawing Mode**
    ```typescript
-   // Via service
    this.gaiaGisService.startPolygonDraw();
-   
-   // Via component reference
-   this.mapComponent.startPolygonDraw();
    ```
 
 2. **Add Vertices**
@@ -175,11 +166,13 @@ Component output event for polygon completion.
 ## Data Format
 
 ### Coordinate System
+
 - **Input**: OpenLayers internal coordinates (EPSG:3857)
 - **Output**: Geographic coordinates (EPSG:4326) in `[longitude, latitude]` format
 - **Conversion**: Automatic conversion from map projection to geographic coordinates
 
 ### Polygon Structure
+
 ```typescript
 interface PolygonGaia {
   coordinates: [number, number][]; // Array of coordinate pairs
@@ -192,6 +185,7 @@ interface PolygonGaia {
 ```
 
 ### Example Output
+
 ```typescript
 {
   coordinates: [
@@ -211,11 +205,14 @@ interface PolygonGaia {
 ## Styling
 
 ### Default Polygon Style
+
 - **Stroke**: Red (#ff0000) with 2px width
 - **Fill**: Semi-transparent red (rgba(255, 0, 0, 0.1))
 - **Drawing Cursor**: Crosshair
+- **Starting Point**: Pulsing green circle
 
 ### Customization
+
 To customize polygon styling, modify the style in the service:
 
 ```typescript
@@ -237,6 +234,7 @@ this.polygonLayer = new VectorLayer({
 ## Use Cases
 
 ### Area Selection
+
 ```typescript
 onPolygonComplete(polygon: PolygonGaia): void {
   // Calculate area of interest
@@ -244,13 +242,11 @@ onPolygonComplete(polygon: PolygonGaia): void {
   
   // Filter data within the polygon
   const filteredData = this.filterByPolygon(polygon.coordinates);
-  
-  // Update UI with selected area
-  this.updateAreaDisplay(area);
 }
 ```
 
 ### Geographic Forms
+
 ```typescript
 onPolygonComplete(polygon: PolygonGaia): void {
   // Store polygon data in form
@@ -258,28 +254,24 @@ onPolygonComplete(polygon: PolygonGaia): void {
     boundary: polygon.coordinates,
     areaId: polygon.properties.id
   });
-  
-  // Validate polygon (e.g., minimum area, maximum vertices)
-  this.validatePolygon(polygon);
 }
 ```
 
 ### Spatial Analysis
+
 ```typescript
 onPolygonComplete(polygon: PolygonGaia): void {
   // Perform spatial queries
   this.performSpatialQuery(polygon.coordinates).subscribe(results => {
     this.displayResults(results);
   });
-  
-  // Generate reports for the area
-  this.generateAreaReport(polygon);
 }
 ```
 
 ## Best Practices
 
 ### Error Handling
+
 ```typescript
 this.gaiaGisService.polygonDrawn.subscribe({
   next: (polygon: PolygonGaia) => {
@@ -287,7 +279,6 @@ this.gaiaGisService.polygonDrawn.subscribe({
       this.processPolygon(polygon);
     } catch (error) {
       console.error('Error processing polygon:', error);
-      // Handle error appropriately
     }
   },
   error: (error) => {
@@ -297,6 +288,7 @@ this.gaiaGisService.polygonDrawn.subscribe({
 ```
 
 ### Memory Management
+
 ```typescript
 ngOnDestroy(): void {
   // Clean up subscriptions
@@ -308,6 +300,7 @@ ngOnDestroy(): void {
 ```
 
 ### Validation
+
 ```typescript
 validatePolygon(polygon: PolygonGaia): boolean {
   const coords = polygon.coordinates;
@@ -351,6 +344,7 @@ validatePolygon(polygon: PolygonGaia): boolean {
    - Cancel drawing when component is destroyed
 
 ### Debug Mode
+
 ```typescript
 // Enable debug logging
 this.gaiaGisService.polygonDrawn.subscribe((polygon) => {
