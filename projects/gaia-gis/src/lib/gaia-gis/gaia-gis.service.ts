@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
+import { Injectable, signal, computed, linkedSignal } from '@angular/core';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ } from 'ol/source';
 import { transformExtent, fromLonLat, toLonLat } from 'ol/proj';
@@ -89,10 +89,51 @@ export class GaiaGisService {
    */
   public readonly polygonCount = computed(() => this.completedPolygons().length);
 
+  // 🔥 Linked signal to handle auto-reset of drawing state
+  private readonly autoResetState = linkedSignal(() => {
+    const state = this.drawingState();
+    
+    if (state === 'completing' || state === 'cancelled') {
+      console.log(`Drawing state changed: ${state}, auto-resetting in 2s`);
+      setTimeout(() => {
+        this.drawingState.set('idle');
+      }, 2000);
+    }
+    
+    return state;
+  });
+
+  // 🔥 Linked signal to track polygon count changes
+  private readonly polygonLogger = linkedSignal(() => {
+    const polygons = this.completedPolygons();
+    const count = polygons.length;
+    
+    if (count > 0) {
+      console.log(`Total polygons: ${count}`);
+      console.log('Latest polygon:', polygons[count - 1]);
+    }
+    
+    return count;
+  });
+
+  // 🔥 Public computed signals that activate the linkedSignals by consuming them
+  public readonly stateStatus = computed(() => {
+    // This computed consumes the autoResetState linkedSignal, keeping it active
+    const state = this.autoResetState();
+    return `Current state: ${state}`;
+  });
+
+  public readonly polygonLogger$ = computed(() => {
+    // This computed consumes the polygonLogger linkedSignal, keeping it active
+    return this.polygonLogger();
+  });
+
   constructor() {
     this.pointLayer = new VectorLayer({
       source: new VectorSource(),
     });
+    
+    // 🔥 LinkedSignals will be activated when accessed by computeds
     
     this.polygonLayer = new VectorLayer({
       source: new VectorSource(),
@@ -125,29 +166,6 @@ export class GaiaGisService {
       zIndex: 1000, // Ensure it's on top
     });
 
-    // 🔥 Effect to handle drawing state changes
-    effect(() => {
-      const isDrawing = this.isDrawingPolygon();
-      const state = this.drawingState();
-      
-      console.log(`Drawing state changed: ${state}, Is Drawing: ${isDrawing}`);
-      
-      // Auto-reset state after completion or cancellation
-      if (state === 'completing' || state === 'cancelled') {
-        setTimeout(() => {
-          this.drawingState.set('idle');
-        }, 2000);
-      }
-    });
-
-    // 🔥 Effect to log polygon completion
-    effect(() => {
-      const polygons = this.completedPolygons();
-      if (polygons.length > 0) {
-        console.log(`Total polygons: ${polygons.length}`);
-        console.log('Latest polygon:', polygons[polygons.length - 1]);
-      }
-    });
   }
 
   /**

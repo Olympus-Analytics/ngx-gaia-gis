@@ -118,6 +118,102 @@ Removes a specific polygon by its ID.
 - **Parameters:**
   - `id`: The unique ID of the polygon to remove
 
+### `getLatestPolygon`
+
+Returns the most recently completed polygon.
+
+- **Returns:** `PolygonGaia | null` - The latest polygon or null if none exist
+
+## Angular 20 Signals
+
+The service uses Angular 20's modern reactive signals with `linkedSignal()` for efficient state management:
+
+### `isDrawingPolygon`
+
+Signal indicating if polygon drawing is currently active.
+
+- **Type:** `Signal<boolean>`
+- **Usage:** `this.gaiaGisService.isDrawingPolygon()`
+
+### `currentPolygon`
+
+Signal containing the current polygon being drawn.
+
+- **Type:** `Signal<PolygonGaia | null>`
+- **Usage:** `this.gaiaGisService.currentPolygon()`
+
+### `completedPolygons`
+
+Signal containing all completed polygons.
+
+- **Type:** `Signal<PolygonGaia[]>`
+- **Usage:** `this.gaiaGisService.completedPolygons()`
+
+### `drawingState`
+
+Signal tracking the current drawing state.
+
+- **Type:** `Signal<'idle' | 'drawing' | 'completing' | 'cancelled'>`
+- **Usage:** `this.gaiaGisService.drawingState()`
+
+### `drawingStatus`
+
+Computed signal providing human-readable drawing status.
+
+- **Type:** `Signal<string>`
+- **Usage:** `this.gaiaGisService.drawingStatus()`
+
+### `polygonCount`
+
+Computed signal for the total number of completed polygons.
+
+- **Type:** `Signal<number>`
+- **Usage:** `this.gaiaGisService.polygonCount()`
+
+### Using Signals in Templates
+
+```typescript
+@Component({
+  template: `
+    <div>
+      <p>Drawing: {{ gaiaGisService.isDrawingPolygon() }}</p>
+      <p>Status: {{ gaiaGisService.drawingStatus() }}</p>
+      <p>Polygons: {{ gaiaGisService.polygonCount() }}</p>
+      
+      @if (gaiaGisService.completedPolygons().length > 0) {
+        <ul>
+          @for (polygon of gaiaGisService.completedPolygons(); track polygon.properties.id) {
+            <li>Polygon {{ polygon.properties.id }}</li>
+          }
+        </ul>
+      }
+    </div>
+  `
+})
+```
+
+### Performance Benefits of Linked Signals
+
+The service uses `linkedSignal()` instead of `effect()` for better performance:
+
+- **Automatic dependency tracking**: More efficient than manual effects
+- **Lazy evaluation**: Only computes when dependencies change
+- **Better tree-shaking**: Unused signals don't impact bundle size
+- **Cleaner code**: No manual effect cleanup required
+
+Example of internal linked signal usage:
+
+```typescript
+// Auto-reset drawing state after completion
+private readonly autoResetState = linkedSignal(() => {
+  const state = this.drawingState();
+  if (state === 'completing' || state === 'cancelled') {
+    setTimeout(() => this.drawingState.set('idle'), 2000);
+  }
+  return state;
+});
+```
+
 ## Events
 
 ### `polygonDrawn`

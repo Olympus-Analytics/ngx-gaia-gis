@@ -26,6 +26,10 @@ export class AppComponent implements OnInit {
   public readonly currentPolygon = this.gaiaGisService.currentPolygon;
   public readonly drawingState = this.gaiaGisService.drawingState;
   
+  // 🔥 Consume service computed signals to activate linkedSignals
+  public readonly stateStatus = this.gaiaGisService.stateStatus;
+  public readonly polygonLogger = this.gaiaGisService.polygonLogger$;
+  
   // 🔥 Computed signals for UI logic
   public readonly canStartDrawing = computed(() => 
     !this.isDrawingPolygon() && this.drawingState() !== 'completing'
@@ -45,6 +49,20 @@ export class AppComponent implements OnInit {
       case 'cancelled': return 'status-warning';
       default: return 'status-idle';
     }
+  });
+
+  // 🔥 Computed that activates all linkedSignals by consuming them
+  public readonly systemStatus = computed(() => {
+    // Consume the service computed signals to activate linkedSignals
+    const state = this.stateStatus();
+    const logger = this.polygonLogger();
+    
+    return {
+      state,
+      logger,
+      canStart: this.canStartDrawing(),
+      total: this.polygonCount()
+    };
   });
   
   // Optional configuration for the map
