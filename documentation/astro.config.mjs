@@ -35,6 +35,7 @@ export default defineConfig({
           items:[
             {label: 'Angular gaia-gis Service', slug: 'advanced-usage/gaia-gis-service'},
             {label: "Methods", slug: 'advanced-usage/methods'},
+            {label: 'Polygon Drawing Tool', slug: 'advanced-usage/polygon-drawing'},
           ]
         }
 			],
