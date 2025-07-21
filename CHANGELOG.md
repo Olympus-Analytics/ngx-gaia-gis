@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2025-01-XX
+
+### Added
+- **Polygon Drawing Tool**: Interactive polygon drawing functionality with coordinate output using Angular 20 signals
+- **PolygonGaia Interface**: New interface for polygon data structure
+- **Event Emission**: `polygonDrawn` event for handling completed polygons
+- **Drawing Controls**: Public methods for starting, canceling, and clearing polygon drawing
+- **Keyboard Support**: Enter key to complete, Escape key to cancel drawing
+- **Visual Feedback**: Cursor changes, polygon styling during drawing, and animated starting point highlighting
+- **Comprehensive Documentation**: Updated README with polygon drawing examples and usage instructions
+
+### Technical Details
+- Added OpenLayers Draw interaction for polygon creation
+- Implemented coordinate conversion from EPSG:3857 to EPSG:4326
+- Added polygon layer management with custom styling
+- Integrated keyboard event handling for better UX
+- Added cleanup mechanisms for drawing interactions
+- Implemented starting point highlighting with pulsing animation
+- Added dedicated highlight layer for better visual feedback
+- Modernized with Angular 20 signals for reactive state management
+- Added computed signals for dynamic UI updates
+- Implemented effects for automatic state handling and logging
+
 ## [1.0.6] - 2025-07-11
 
 ### Added

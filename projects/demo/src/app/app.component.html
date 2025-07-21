@@ -1,1 +1,111 @@
-<div class="map-container"><gaia-gis [options]="settings"></gaia-gis></div>
+<div class="map-container">
+  <gaia-gis [options]="settings" (polygonDrawn)="onPolygonComplete($event)"></gaia-gis>
+  
+  <!-- 🔥 Enhanced Polygon Drawing Controls using Signals -->
+  <div class="drawing-controls">
+    <h4>🗺️ Polygon Drawing Tool</h4>
+    
+    <!-- Status Display using Computed Signal -->
+    <div class="status-display" [class]="statusClass()">
+      <span class="status-icon">{{ getStatusIcon() }}</span>
+      <span class="status-text">{{ drawingStatus() }}</span>
+    </div>
+    
+    <button 
+      (click)="startDrawing()" 
+      [disabled]="!canStartDrawing()"
+      class="control-btn primary">
+      🎯 Start Drawing Polygon
+    </button>
+    
+    @if (showCancelButton()) {
+      <button 
+        (click)="cancelDrawing()" 
+        class="control-btn warning">
+        ❌ Cancel Drawing
+      </button>
+    }
+    
+    <button 
+      (click)="clearPolygons()" 
+      [disabled]="!hasPolygons()"
+      class="control-btn danger">
+      🗑️ Clear All ({{ polygonCount() }})
+    </button>
+  </div>
+  
+  <!-- 🔥 Real-time Polygon List using Modern @if -->
+  @if (hasPolygons()) {
+    <div class="polygon-list">
+      <h4>📍 Completed Polygons ({{ polygonCount() }})</h4>
+      <div class="polygon-items">
+        <!-- 🔥 Modern @for control flow -->
+        @for (polygon of completedPolygons(); track polygon.properties?.['id']) {
+          <div class="polygon-item">
+            <div class="polygon-info">
+              <strong>ID:</strong> {{ polygon.properties?.['id'] }}<br>
+              <strong>Vertices:</strong> {{ polygon.coordinates.length }}<br>
+              <strong>Created:</strong> {{ formatDate(polygon.properties?.['createdAt']) }}
+            </div>
+            <button 
+              (click)="removePolygon(polygon.properties?.['id']!)" 
+              class="remove-btn"
+              title="Remove this polygon">
+              🗑️
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+  
+  <!-- 🔥 Instructions with Dynamic Content using Modern Control Flow -->
+  <div class="instructions">
+    <h3>🎮 Polygon Drawing Instructions</h3>
+    
+    @if (isDrawingPolygon()) {
+      <div class="drawing-help">
+        <p><strong>✏️ Currently Drawing:</strong></p>
+        <ul>
+          <li>Click on map to add vertices</li>
+          <li>Click the <span class="highlight">green pulsing circle</span> to complete</li>
+          <li>Press <kbd>Enter</kbd> to finish</li>
+          <li>Press <kbd>Escape</kbd> to cancel</li>
+        </ul>
+      </div>
+    } @else {
+      <div class="idle-help">
+        <p><strong>🚀 Ready to Draw:</strong></p>
+        <ul>
+          <li>Click "Start Drawing Polygon" to begin</li>
+          <li>Draw custom shapes on the map</li>
+          <li>View real-time polygon list</li>
+          <li>Export coordinates for your app</li>
+        </ul>
+      </div>
+    }
+    
+    @if (hasPolygons()) {
+      <div class="stats">
+        <p><strong>📊 Stats:</strong> {{ systemStatus().total }} polygon(s) created</p>
+      </div>
+    }
+  </div>
+  
+  <!-- 🔥 Developer Info Panel -->
+  <div class="dev-info">
+    <h4>🔧 Signals Debug Info</h4>
+    <div class="debug-item">
+      <strong>Drawing State:</strong> {{ drawingState() }}
+    </div>
+    <div class="debug-item">
+      <strong>Is Drawing:</strong> {{ isDrawingPolygon() }}
+    </div>
+    <div class="debug-item">
+      <strong>Polygon Count:</strong> {{ polygonCount() }}
+    </div>
+    <div class="debug-item">
+      <strong>Can Start:</strong> {{ canStartDrawing() }}
+    </div>
+  </div>
+</div>
