@@ -1,4 +1,11 @@
-import { Injectable, signal, computed, linkedSignal } from '@angular/core';
+import {
+  Injectable,
+  signal,
+  computed,
+  linkedSignal,
+  inject,
+  PLATFORM_ID,
+} from '@angular/core';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ } from 'ol/source';
 import { transformExtent, fromLonLat, toLonLat } from 'ol/proj';
@@ -16,11 +23,13 @@ import Overlay from 'ol/Overlay';
 import { PointGaia } from '../interfaces/PointGaia.model';
 import Draw from 'ol/interaction/Draw';
 import { unByKey } from 'ol/Observable';
+import { isPlatformServer } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GaiaGisService {
+  private readonly platform = inject(PLATFORM_ID);
   private map!: Map;
   private labels = new TileLayer({
     source: new XYZ({
@@ -29,16 +38,16 @@ export class GaiaGisService {
     }),
   });
   private rasterLayers: TileLayer[] = [];
-  private pointLayer: VectorLayer<VectorSource>;
+  private pointLayer!: VectorLayer<VectorSource>;
   private popup!: Overlay;
 
   // Polygon drawing properties
-  private polygonLayer: VectorLayer<VectorSource>;
+  private polygonLayer!: VectorLayer<VectorSource>;
   private drawInteraction: Draw | null = null;
   private keyListener: any = null;
 
   // Highlight layer for the starting point
-  private highlightLayer: VectorLayer<VectorSource>;
+  private highlightLayer!: VectorLayer<VectorSource>;
   private startPointFeature: Feature | null = null;
 
   // 🔥 Angular 20 Signals for reactive state management
@@ -61,7 +70,9 @@ export class GaiaGisService {
   /**
    * Signal to track drawing mode state
    */
-  public readonly drawingState = signal<'idle' | 'drawing' | 'completing' | 'cancelled'>('idle');
+  public readonly drawingState = signal<
+    'idle' | 'drawing' | 'completing' | 'cancelled'
+  >('idle');
 
   /**
    * Computed signal for drawing status message
@@ -87,7 +98,9 @@ export class GaiaGisService {
   /**
    * Computed signal for polygon count
    */
-  public readonly polygonCount = computed(() => this.completedPolygons().length);
+  public readonly polygonCount = computed(
+    () => this.completedPolygons().length
+  );
 
   // 🔥 Linked signal to handle auto-reset of drawing state
   private readonly autoResetState = linkedSignal(() => {
@@ -129,6 +142,7 @@ export class GaiaGisService {
   });
 
   constructor() {
+    if (isPlatformServer(this.platform)) return; // Skip initialization on server side
     this.pointLayer = new VectorLayer({
       source: new VectorSource(),
     });
@@ -165,7 +179,6 @@ export class GaiaGisService {
       }),
       zIndex: 1000, // Ensure it's on top
     });
-
   }
 
   /**
@@ -177,6 +190,7 @@ export class GaiaGisService {
    * @param {string} [options.design=MapsDesign.CARTOCDN] - The design of the map.
    */
   initializeMap(target: string, options: Option = {}): void {
+    if (isPlatformServer(this.platform)) return; // Skip initialization on server side
     const { center = [0, 0], zoom = 2, design = MapsDesign.CARTOCDN } = options;
 
     let baseLayer: TileLayer;
@@ -228,6 +242,7 @@ export class GaiaGisService {
    * Initializes the popup overlay for the map.
    */
   private initializePopup(): void {
+    if (isPlatformServer(this.platform)) return; // Skip initialization on server side
     const container = document.getElementById('popup')!;
     const content = document.getElementById('popup-content')!;
     this.popup = new Overlay({
@@ -279,6 +294,7 @@ export class GaiaGisService {
    * @param {[number, number]} coordinate - The coordinate to highlight
    */
   private highlightStartPoint(coordinate: [number, number]): void {
+    if (isPlatformServer(this.platform)) return; // Skip on server side
     this.clearStartPointHighlight();
 
     this.startPointFeature = new Feature({
@@ -310,6 +326,7 @@ export class GaiaGisService {
    * Animates the starting point with a pulsing effect
    */
   private animateStartPoint(): void {
+    if (isPlatformServer(this.platform)) return; // Skip on server side
     if (!this.startPointFeature || !this.isDrawingPolygon()) {
       return;
     }
@@ -356,6 +373,7 @@ export class GaiaGisService {
    * Clears the starting point highlight
    */
   private clearStartPointHighlight(): void {
+    if (isPlatformServer(this.platform)) return; // Skip on server side
     const source = this.highlightLayer.getSource();
     if (source) {
       source.clear();
@@ -368,6 +386,7 @@ export class GaiaGisService {
    * Users can click to add vertices and complete the polygon by clicking the first point again or pressing Enter.
    */
   startPolygonDraw(): void {
+    if (isPlatformServer(this.platform)) return; // Skip on server side
     if (this.isDrawingPolygon()) {
       this.cancelPolygonDraw();
     }
@@ -416,8 +435,8 @@ export class GaiaGisService {
       const coordinates = geometry.getCoordinates()[0]; // Get outer ring coordinates
 
       // Convert coordinates from EPSG:3857 to EPSG:4326 (lat/lng)
-      const latLngCoordinates: [number, number][] = coordinates.map(coord =>
-        toLonLat(coord) as [number, number]
+      const latLngCoordinates: [number, number][] = coordinates.map(
+        (coord) => toLonLat(coord) as [number, number]
       );
 
       // Create polygon data with unique ID
@@ -427,7 +446,7 @@ export class GaiaGisService {
         properties: {
           id: polygonId,
           createdAt: new Date().toISOString(),
-        }
+        },
       };
 
       // 🔥 Associate the feature with the polygon ID for later removal
@@ -436,7 +455,7 @@ export class GaiaGisService {
 
       // 🔥 Update signals
       this.currentPolygon.set(polygonData);
-      this.completedPolygons.update(polygons => [...polygons, polygonData]);
+      this.completedPolygons.update((polygons) => [...polygons, polygonData]);
       this.drawingState.set('completing');
 
       // Clean up
@@ -462,6 +481,7 @@ export class GaiaGisService {
    * 🔥 Cancels the current polygon drawing operation using signals.
    */
   cancelPolygonDraw(): void {
+    if (isPlatformServer(this.platform)) return; // Skip on server side
     if (!this.isDrawingPolygon()) {
       return;
     }
@@ -483,6 +503,7 @@ export class GaiaGisService {
    * Stops polygon drawing mode and cleans up resources.
    */
   private stopPolygonDraw(): void {
+    if (isPlatformServer(this.platform)) return; // Skip on server side
     // 🔥 Update signal
     this.isDrawingPolygon.set(false);
 
@@ -506,6 +527,7 @@ export class GaiaGisService {
    * 🔥 Clears all drawn polygons from the map using signals.
    */
   clearPolygons(): void {
+    if (isPlatformServer(this.platform)) return; // Skip on server side
     console.log(`🗑️ Clearing all polygons...`);
 
     const source = this.polygonLayer.getSource();
@@ -545,7 +567,7 @@ export class GaiaGisService {
       const features = source.getFeatures();
       console.log(`📋 Total features on map: ${features.length}`);
 
-      const featureToRemove = features.find(feature => {
+      const featureToRemove = features.find((feature) => {
         const featureId = feature.get('polygonId');
         console.log(`🔍 Checking feature with ID: ${featureId}`);
         return featureId === id;
@@ -559,21 +581,27 @@ export class GaiaGisService {
         console.warn(`❌ Feature with ID ${id} not found on map`);
 
         // If we can't find by polygonId, try alternative approach
-        const polygonToRemove = this.completedPolygons().find(p => p.properties?.['id'] === id);
+        const polygonToRemove = this.completedPolygons().find(
+          (p) => p.properties?.['id'] === id
+        );
         if (polygonToRemove) {
           // Remove all features and re-add the remaining ones
           console.log(`🔄 Rebuilding map features...`);
           source.clear();
 
-          const remainingPolygons = this.completedPolygons().filter(p => p.properties?.['id'] !== id);
+          const remainingPolygons = this.completedPolygons().filter(
+            (p) => p.properties?.['id'] !== id
+          );
           this.rebuildMapFeatures(remainingPolygons);
         }
       }
     }
 
     // Then update the signals
-    this.completedPolygons.update(polygons => {
-      const filtered = polygons.filter(polygon => polygon.properties?.['id'] !== id);
+    this.completedPolygons.update((polygons) => {
+      const filtered = polygons.filter(
+        (polygon) => polygon.properties?.['id'] !== id
+      );
       console.log(`📊 Polygons after removal: ${filtered.length}`);
       return filtered;
     });
@@ -586,9 +614,9 @@ export class GaiaGisService {
     const source = this.polygonLayer.getSource();
     if (!source) return;
 
-    polygons.forEach(polygonData => {
+    polygons.forEach((polygonData) => {
       // Convert lat/lng coordinates back to map coordinates
-      const mapCoordinates = polygonData.coordinates.map(coord =>
+      const mapCoordinates = polygonData.coordinates.map((coord) =>
         fromLonLat(coord)
       );
 
