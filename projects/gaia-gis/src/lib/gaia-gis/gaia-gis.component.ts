@@ -1,4 +1,14 @@
-import { Component, inject, Input, OnInit, output, computed, linkedSignal } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  OnInit,
+  output,
+  computed,
+  linkedSignal,
+  PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { GaiaGisService } from './gaia-gis.service';
 import { Option, PolygonGaia } from '../interfaces';
 
@@ -17,6 +27,7 @@ export class GaiaGisComponent implements OnInit {
 
   // 🔥 Inject the service with signals
   private readonly gaiaGisService = inject(GaiaGisService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   // 🔥 Expose service signals for template usage
   public readonly isDrawingPolygon = this.gaiaGisService.isDrawingPolygon;
@@ -27,12 +38,12 @@ export class GaiaGisComponent implements OnInit {
   public readonly drawingState = this.gaiaGisService.drawingState;
 
   // 🔥 Computed signal for UI state
-  public readonly canStartDrawing = computed(() =>
-    !this.isDrawingPolygon() && this.drawingState() !== 'completing'
+  public readonly canStartDrawing = computed(
+    () => !this.isDrawingPolygon() && this.drawingState() !== 'completing'
   );
 
-  public readonly showCancelButton = computed(() =>
-    this.isDrawingPolygon() && this.drawingState() === 'drawing'
+  public readonly showCancelButton = computed(
+    () => this.isDrawingPolygon() && this.drawingState() === 'drawing'
   );
 
   // 🔥 Linked signal to emit events for backward compatibility
@@ -48,14 +59,18 @@ export class GaiaGisComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.initializeMap();
+    if (isPlatformBrowser(this.platformId)) {
+      this.initializeMap();
+    }
   }
 
   initializeMap(): void {
-    if (this.options) {
-      this.gaiaGisService.initializeMap('map', this.options);
-    } else {
-      this.gaiaGisService.initializeMap('map');
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.options) {
+        this.gaiaGisService.initializeMap('map', this.options);
+      } else {
+        this.gaiaGisService.initializeMap('map');
+      }
     }
   }
 
@@ -63,35 +78,44 @@ export class GaiaGisComponent implements OnInit {
    * 🔥 Starts polygon drawing mode using the service signals.
    */
   startPolygonDraw(): void {
-    this.gaiaGisService.startPolygonDraw();
+    if (isPlatformBrowser(this.platformId)) {
+      this.gaiaGisService.startPolygonDraw();
+    }
   }
 
   /**
    * 🔥 Cancels polygon drawing using the service signals.
    */
   cancelPolygonDraw(): void {
-    this.gaiaGisService.cancelPolygonDraw();
+    if (isPlatformBrowser(this.platformId)) {
+      this.gaiaGisService.cancelPolygonDraw();
+    }
   }
 
   /**
    * 🔥 Clears all drawn polygons using the service signals.
    */
   clearPolygons(): void {
-    this.gaiaGisService.clearPolygons();
+    if (isPlatformBrowser(this.platformId)) {
+      this.gaiaGisService.clearPolygons();
+    }
   }
 
   /**
    * 🔥 Gets the latest polygon using signals
    */
   getLatestPolygon(): PolygonGaia | null {
-    return this.gaiaGisService.getLatestPolygon();
+    return isPlatformBrowser(this.platformId)
+      ? this.gaiaGisService.getLatestPolygon()
+      : null;
   }
 
   /**
    * 🔥 Removes a polygon by ID using signals
    */
   removePolygonById(id: number): void {
-    this.gaiaGisService.removePolygonById(id);
+    if (isPlatformBrowser(this.platformId)) {
+      this.gaiaGisService.removePolygonById(id);
+    }
   }
 }
-

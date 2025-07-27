@@ -31,45 +31,45 @@ export class GaiaGisService {
   private rasterLayers: TileLayer[] = [];
   private pointLayer: VectorLayer<VectorSource>;
   private popup!: Overlay;
-  
+
   // Polygon drawing properties
   private polygonLayer: VectorLayer<VectorSource>;
   private drawInteraction: Draw | null = null;
   private keyListener: any = null;
-  
+
   // Highlight layer for the starting point
   private highlightLayer: VectorLayer<VectorSource>;
   private startPointFeature: Feature | null = null;
-  
+
   // 🔥 Angular 20 Signals for reactive state management
-  
+
   /**
    * Signal to track if polygon drawing is active
    */
   public readonly isDrawingPolygon = signal<boolean>(false);
-  
+
   /**
    * Signal to store the current polygon being drawn
    */
   public readonly currentPolygon = signal<PolygonGaia | null>(null);
-  
+
   /**
    * Signal to store all completed polygons
    */
   public readonly completedPolygons = signal<PolygonGaia[]>([]);
-  
+
   /**
    * Signal to track drawing mode state
    */
   public readonly drawingState = signal<'idle' | 'drawing' | 'completing' | 'cancelled'>('idle');
-  
+
   /**
    * Computed signal for drawing status message
    */
   public readonly drawingStatus = computed(() => {
     const state = this.drawingState();
     const isDrawing = this.isDrawingPolygon();
-    
+
     switch (state) {
       case 'idle':
         return 'Ready to draw';
@@ -83,7 +83,7 @@ export class GaiaGisService {
         return 'Ready to draw';
     }
   });
-  
+
   /**
    * Computed signal for polygon count
    */
@@ -92,14 +92,14 @@ export class GaiaGisService {
   // 🔥 Linked signal to handle auto-reset of drawing state
   private readonly autoResetState = linkedSignal(() => {
     const state = this.drawingState();
-    
+
     if (state === 'completing' || state === 'cancelled') {
       console.log(`Drawing state changed: ${state}, auto-resetting in 2s`);
       setTimeout(() => {
         this.drawingState.set('idle');
       }, 2000);
     }
-    
+
     return state;
   });
 
@@ -107,12 +107,12 @@ export class GaiaGisService {
   private readonly polygonLogger = linkedSignal(() => {
     const polygons = this.completedPolygons();
     const count = polygons.length;
-    
+
     if (count > 0) {
       console.log(`Total polygons: ${count}`);
       console.log('Latest polygon:', polygons[count - 1]);
     }
-    
+
     return count;
   });
 
@@ -132,9 +132,9 @@ export class GaiaGisService {
     this.pointLayer = new VectorLayer({
       source: new VectorSource(),
     });
-    
+
     // 🔥 LinkedSignals will be activated when accessed by computeds
-    
+
     this.polygonLayer = new VectorLayer({
       source: new VectorSource(),
       style: new Style({
@@ -280,11 +280,11 @@ export class GaiaGisService {
    */
   private highlightStartPoint(coordinate: [number, number]): void {
     this.clearStartPointHighlight();
-    
+
     this.startPointFeature = new Feature({
       geometry: new Point(coordinate),
     });
-    
+
     // Add pulsing animation effect
     const style = new Style({
       image: new CircleStyle({
@@ -298,10 +298,10 @@ export class GaiaGisService {
         }),
       }),
     });
-    
+
     this.startPointFeature.setStyle(style);
     this.highlightLayer.getSource()!.addFeature(this.startPointFeature);
-    
+
     // Add pulsing effect with CSS-like animation
     this.animateStartPoint();
   }
@@ -343,7 +343,7 @@ export class GaiaGisService {
       });
 
       this.startPointFeature.setStyle(style);
-      
+
       if (this.isDrawingPolygon()) {
         setTimeout(animate, 100);
       }
@@ -398,7 +398,7 @@ export class GaiaGisService {
     this.drawInteraction.on('drawstart', (event) => {
       // Listen for the first coordinate
       const geometry = event.feature.getGeometry() as Polygon;
-      
+
       // Use a small delay to ensure the coordinate is set
       setTimeout(() => {
         const coordinates = geometry.getCoordinates()[0];
@@ -414,9 +414,9 @@ export class GaiaGisService {
       const feature = event.feature;
       const geometry = feature.getGeometry() as Polygon;
       const coordinates = geometry.getCoordinates()[0]; // Get outer ring coordinates
-      
+
       // Convert coordinates from EPSG:3857 to EPSG:4326 (lat/lng)
-      const latLngCoordinates: [number, number][] = coordinates.map(coord => 
+      const latLngCoordinates: [number, number][] = coordinates.map(coord =>
         toLonLat(coord) as [number, number]
       );
 
@@ -471,7 +471,7 @@ export class GaiaGisService {
     this.currentPolygon.set(null);
 
     this.stopPolygonDraw();
-    
+
     // Clear any incomplete drawing
     const source = this.polygonLayer.getSource();
     if (source) {
@@ -485,7 +485,7 @@ export class GaiaGisService {
   private stopPolygonDraw(): void {
     // 🔥 Update signal
     this.isDrawingPolygon.set(false);
-    
+
     this.map.getTargetElement().style.cursor = '';
 
     if (this.drawInteraction) {
@@ -507,20 +507,20 @@ export class GaiaGisService {
    */
   clearPolygons(): void {
     console.log(`🗑️ Clearing all polygons...`);
-    
+
     const source = this.polygonLayer.getSource();
     if (source) {
       const featureCount = source.getFeatures().length;
       source.clear();
       console.log(`🗑️ Cleared ${featureCount} features from map`);
     }
-    
+
     // 🔥 Reset signals
     const polygonCount = this.completedPolygons().length;
     this.completedPolygons.set([]);
     this.currentPolygon.set(null);
     console.log(`📊 Cleared ${polygonCount} polygons from signals`);
-    
+
     // Also clear any highlights
     this.clearStartPointHighlight();
   }
@@ -538,39 +538,39 @@ export class GaiaGisService {
    */
   removePolygonById(id: number): void {
     console.log(`🗑️ Removing polygon with ID: ${id}`);
-    
+
     // First remove from the map layer
     const source = this.polygonLayer.getSource();
     if (source) {
       const features = source.getFeatures();
       console.log(`📋 Total features on map: ${features.length}`);
-      
+
       const featureToRemove = features.find(feature => {
         const featureId = feature.get('polygonId');
         console.log(`🔍 Checking feature with ID: ${featureId}`);
         return featureId === id;
       });
-      
+
       if (featureToRemove) {
         console.log(`✅ Found feature to remove with ID: ${id}`);
         source.removeFeature(featureToRemove);
         console.log(`🗑️ Feature removed from map`);
       } else {
         console.warn(`❌ Feature with ID ${id} not found on map`);
-        
+
         // If we can't find by polygonId, try alternative approach
         const polygonToRemove = this.completedPolygons().find(p => p.properties?.['id'] === id);
         if (polygonToRemove) {
           // Remove all features and re-add the remaining ones
           console.log(`🔄 Rebuilding map features...`);
           source.clear();
-          
+
           const remainingPolygons = this.completedPolygons().filter(p => p.properties?.['id'] !== id);
           this.rebuildMapFeatures(remainingPolygons);
         }
       }
     }
-    
+
     // Then update the signals
     this.completedPolygons.update(polygons => {
       const filtered = polygons.filter(polygon => polygon.properties?.['id'] !== id);
@@ -588,10 +588,10 @@ export class GaiaGisService {
 
     polygons.forEach(polygonData => {
       // Convert lat/lng coordinates back to map coordinates
-      const mapCoordinates = polygonData.coordinates.map(coord => 
+      const mapCoordinates = polygonData.coordinates.map(coord =>
         fromLonLat(coord)
       );
-      
+
       // Close the polygon if not already closed
       const lastCoord = mapCoordinates[mapCoordinates.length - 1];
       const firstCoord = mapCoordinates[0];
